@@ -11,7 +11,9 @@ type Generator struct {
 	lookbackSize int
 }
 
-// Generate generates a list of recipes that caps at a certain threshold.
+// Generate generates a list of recipes that caps at a certain threshold. The generator will try to avoid
+// using the same recipe within a specifed lookbackSize. If it fails to find different recipes
+// it will choose the last one it picked.  This can be controlled with maxRetries.
 func (g Generator) Generate(threshold int) []Recipe {
 	selected := make([]Recipe, 0)
 	for {
@@ -28,7 +30,7 @@ func (g Generator) Generate(threshold int) []Recipe {
 				fmt.Printf("could not find different recipe within %d tries. adding %s to the list", g.maxRetries, pick.Name)
 				selected = append(selected, pick)
 			}
-			fmt.Printf("%s is already picked within in the last 3 days. trying again\n", pick.Name)
+			fmt.Printf("%s is already picked within in the last %d days. trying again\n", pick.Name, g.lookbackSize)
 			tries++
 			continue
 		}
